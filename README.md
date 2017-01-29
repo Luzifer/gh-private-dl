@@ -11,9 +11,9 @@ GH-PrivateDL is a [Sparta](http://gosparta.io/) project to create and deploy an 
 
 - First step: Get yourself an AWS account and some IAM credentials being able to do stuff...
 - Create a S3 bucket where all the intermediate stuff can be dropped before deploying
-- Get this repo cloned onto your disk
+- Get this repo cloned onto your disk and build the Go binary or just fetch a precompiled [release](https://github.com/Luzifer/gh-private-dl/releases/latest)
 - Execute the deployment:  
-`go run main.go provision -s <your bucket>`
+`./gh-private-dl provision -s <your bucket>`
 - Get a lot of coffee. The initial deployment will take like forever.
 
 After you've deployed your own copy of this you will see some `https://....execute-api.us-east-1.amazonaws.com` URL inside your terminal. That's the sign everything is up and you can use it. Remember that URL.
@@ -35,3 +35,7 @@ Now try this:
 ```
 
 You should have a binary sitting in `/tmp/vault2env` and everything is fine. (Okay as I said, it's a public project which makes the success not that huge but now you can imagine your own URLs with your own private projects and **then** you will be happy...)
+
+### Updating
+
+To update the lambda function just repeat the deployment process. It will take way less time and after it finished you will have a new version at the same URL.
