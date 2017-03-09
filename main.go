@@ -14,6 +14,10 @@ import (
 	sparta "github.com/mweagle/Sparta"
 )
 
+const (
+	httpRequestTimeout = 5 * time.Second
+)
+
 type ghRelease struct {
 	Assets []struct {
 		Name string `json:"name"`
@@ -52,7 +56,7 @@ func getDownloadURL(repo, version, filename, ghToken string) (string, error) {
 
 	req, _ := http.NewRequest("GET", u, nil)
 	req.SetBasicAuth("auth", ghToken)
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), httpRequestTimeout)
 	defer cancel()
 
 	httpClient := &http.Client{
@@ -93,7 +97,7 @@ func getDownloadURL(repo, version, filename, ghToken string) (string, error) {
 	req.Header.Set("Accept", "application/octet-stream")
 	req.SetBasicAuth("auth", ghToken)
 
-	ctx, cancel = context.WithTimeout(context.Background(), time.Second)
+	ctx, cancel = context.WithTimeout(context.Background(), httpRequestTimeout)
 	defer cancel()
 
 	resp, err = httpClient.Do(req.WithContext(ctx))
@@ -143,7 +147,9 @@ func handleGithubDownload(event *json.RawMessage, context *sparta.LambdaContext,
 
 func main() {
 	var lambdaFunctions []*sparta.LambdaAWSInfo
-	lambdaFn := sparta.NewLambda(sparta.IAMRoleDefinition{}, handleGithubDownload, nil)
+	lambdaFn := sparta.NewLambda(sparta.IAMRoleDefinition{}, handleGithubDownload, &sparta.LambdaFunctionOptions{
+		Timeout: 30,
+	})
 	lambdaFunctions = append(lambdaFunctions, lambdaFn)
 
 	stage := sparta.NewStage("prod")
