@@ -1,3 +1,7 @@
+# 0.4.1 / 2017-03-13
+
+  * Fix: An health check for an ELB may not answer 204
+
 # 0.4.0 / 2017-03-13
 
   * Add a healthcheck URL
