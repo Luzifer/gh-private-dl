@@ -1,3 +1,7 @@
+# 0.4.0 / 2017-03-13
+
+  * Add a healthcheck URL
+
 # 0.3.0 / 2017-03-13
 
   * Add Dockerfile for local-run version
