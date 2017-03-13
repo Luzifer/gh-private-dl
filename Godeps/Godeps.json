@@ -1,7 +1,7 @@
 {
 	"ImportPath": "github.com/Luzifer/gh-private-dl",
-	"GoVersion": "go1.7",
-	"GodepVersion": "v78",
+	"GoVersion": "go1.8",
+	"GodepVersion": "v79",
 	"Deps": [
 		{
 			"ImportPath": "github.com/Sirupsen/logrus",
@@ -216,6 +216,14 @@
 			"ImportPath": "github.com/go-ini/ini",
 			"Comment": "v1.24.0",
 			"Rev": "e3c2d47c61e5333f9aa2974695dd94396eb69c75"
+		},
+		{
+			"ImportPath": "github.com/gorilla/context",
+			"Rev": "1c83b3eabd45b6d76072b66b746c20815fb2872d"
+		},
+		{
+			"ImportPath": "github.com/gorilla/mux",
+			"Rev": "49c024275504f0341e5a9971eb7ba7fa3dc7af40"
 		},
 		{
 			"ImportPath": "github.com/inconshreveable/mousetrap",
