@@ -28,7 +28,7 @@ func init() {
 func runLocally(cmd *cobra.Command, args []string) error {
 	r := mux.NewRouter()
 	r.HandleFunc("/{user}/{repo}/releases/download/{version}/{binary}", handleLocalExecution)
-	r.HandleFunc("/status", func(res http.ResponseWriter, r *http.Request) { res.WriteHeader(http.StatusNoContent) })
+	r.HandleFunc("/status", func(res http.ResponseWriter, r *http.Request) { res.WriteHeader(http.StatusOK) })
 
 	log.Printf("Starting local webserver on %s", executionPort)
 	return http.ListenAndServe(executionPort, r)
