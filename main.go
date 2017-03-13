@@ -1,15 +1,14 @@
 package main
 
 import (
-	"context"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 	"strings"
 	"time"
 
+	"github.com/Luzifer/gh-private-dl/privatehub"
 	"github.com/Sirupsen/logrus"
 	sparta "github.com/mweagle/Sparta"
 )
@@ -17,13 +16,6 @@ import (
 const (
 	httpRequestTimeout = 5 * time.Second
 )
-
-type ghRelease struct {
-	Assets []struct {
-		Name string `json:"name"`
-		URL  string `json:"url"`
-	} `json:"assets"`
-}
 
 func extractGithubToken(lambdaEvent sparta.APIGatewayLambdaJSONEvent) (string, error) {
 	if hdr, ok := lambdaEvent.Headers["Authorization"]; ok {
@@ -47,69 +39,7 @@ func extractGithubToken(lambdaEvent sparta.APIGatewayLambdaJSONEvent) (string, e
 	return "", errors.New("You need to provide HTTP basic auth")
 }
 
-func getDownloadURL(repo, version, filename, ghToken string) (string, error) {
-	path := fmt.Sprintf("/repos/%s/releases/tags/%s", repo, version)
-	if version == "latest" {
-		path = fmt.Sprintf("/repos/%s/releases/latest", repo)
-	}
-	u := fmt.Sprintf("https://api.github.com%s", path)
-
-	req, _ := http.NewRequest("GET", u, nil)
-	req.SetBasicAuth("auth", ghToken)
-	ctx, cancel := context.WithTimeout(context.Background(), httpRequestTimeout)
-	defer cancel()
-
-	httpClient := &http.Client{
-		CheckRedirect: func(req *http.Request, via []*http.Request) error {
-			return http.ErrUseLastResponse
-		},
-	}
-
-	resp, err := httpClient.Do(req.WithContext(ctx))
-	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != 200 {
-		return "", errors.New("Did not find given release")
-	}
-
-	r := &ghRelease{}
-	if err := json.NewDecoder(resp.Body).Decode(r); err != nil {
-		return "", err
-	}
-
-	var dlURL string
-	for _, ass := range r.Assets {
-		if ass.Name != filename {
-			continue
-		}
-
-		dlURL = ass.URL
-	}
-
-	if dlURL == "" {
-		return "", errors.New("Did not find given filename in release")
-	}
-
-	req, _ = http.NewRequest("HEAD", dlURL, nil)
-	req.Header.Set("Accept", "application/octet-stream")
-	req.SetBasicAuth("auth", ghToken)
-
-	ctx, cancel = context.WithTimeout(context.Background(), httpRequestTimeout)
-	defer cancel()
-
-	resp, err = httpClient.Do(req.WithContext(ctx))
-	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
-
-	return resp.Header.Get("Location"), nil
-}
-
-func handleGithubDownload(event *json.RawMessage, context *sparta.LambdaContext, w http.ResponseWriter, logger *logrus.Logger) {
+func handleLambdaGithubDownload(event *json.RawMessage, context *sparta.LambdaContext, w http.ResponseWriter, logger *logrus.Logger) {
 	var lambdaEvent sparta.APIGatewayLambdaJSONEvent
 	err := json.Unmarshal([]byte(*event), &lambdaEvent)
 	if err != nil {
@@ -124,7 +54,7 @@ func handleGithubDownload(event *json.RawMessage, context *sparta.LambdaContext,
 		return
 	}
 
-	dlURL, err := getDownloadURL(
+	dlURL, err := privatehub.GetDownloadURL(
 		strings.Join([]string{lambdaEvent.PathParams["user"], lambdaEvent.PathParams["repo"]}, "/"),
 		lambdaEvent.PathParams["version"],
 		lambdaEvent.PathParams["binary"],
@@ -147,7 +77,7 @@ func handleGithubDownload(event *json.RawMessage, context *sparta.LambdaContext,
 
 func main() {
 	var lambdaFunctions []*sparta.LambdaAWSInfo
-	lambdaFn := sparta.NewLambda(sparta.IAMRoleDefinition{}, handleGithubDownload, &sparta.LambdaFunctionOptions{
+	lambdaFn := sparta.NewLambda(sparta.IAMRoleDefinition{}, handleLambdaGithubDownload, &sparta.LambdaFunctionOptions{
 		Timeout: 30,
 	})
 	lambdaFunctions = append(lambdaFunctions, lambdaFn)
