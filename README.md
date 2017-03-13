@@ -39,3 +39,13 @@ You should have a binary sitting in `/tmp/vault2env` and everything is fine. (Ok
 ### Updating
 
 To update the lambda function just repeat the deployment process. It will take way less time and after it finished you will have a new version at the same URL.
+
+## How to use this if you don't want to run it with AWS Lambda?
+
+The binary also contains a `run` command which will start the service locally. In that case you can use it like any other Go webserver.
+
+Also there is a Docker container available which internally uses the `run` command:
+
+```
+# docker run --rm -ti -p 3000:3000 quay.io/luzifer/privatehub
+```
