@@ -1,3 +1,7 @@
+# 0.5.0 / 2017-04-13
+
+  * Implement access logging for run command
+
 # 0.4.1 / 2017-03-13
 
   * Fix: An health check for an ELB may not answer 204
