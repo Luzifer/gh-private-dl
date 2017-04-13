@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/Luzifer/gh-private-dl/privatehub"
+	http_helper "github.com/Luzifer/go_helpers/http"
 	log "github.com/Sirupsen/logrus"
 	"github.com/gorilla/mux"
 	sparta "github.com/mweagle/Sparta"
@@ -31,7 +32,7 @@ func runLocally(cmd *cobra.Command, args []string) error {
 	r.HandleFunc("/status", func(res http.ResponseWriter, r *http.Request) { res.WriteHeader(http.StatusOK) })
 
 	log.Printf("Starting local webserver on %s", executionPort)
-	return http.ListenAndServe(executionPort, r)
+	return http.ListenAndServe(executionPort, http_helper.NewHTTPLogHandler(r))
 }
 
 func handleLocalExecution(res http.ResponseWriter, r *http.Request) {
