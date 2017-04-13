@@ -4,6 +4,16 @@
 	"GodepVersion": "v79",
 	"Deps": [
 		{
+			"ImportPath": "github.com/Luzifer/go_helpers/accessLogger",
+			"Comment": "v2.2.0",
+			"Rev": "e31c3a2659d3f4901f696692cfe98bd0eb5168f9"
+		},
+		{
+			"ImportPath": "github.com/Luzifer/go_helpers/http",
+			"Comment": "v2.2.0",
+			"Rev": "e31c3a2659d3f4901f696692cfe98bd0eb5168f9"
+		},
+		{
 			"ImportPath": "github.com/Sirupsen/logrus",
 			"Comment": "v0.10.0-38-g3ec0642",
 			"Rev": "3ec0642a7fb6488f65b06f9040adc67e3990296a"
